@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+typedef struct Node{
+    int address,key,next;
+    bool flag;              //这题目坑在这，给的结点不一定在链表上，需要记录
+}NODE;
+
+NODE node[100000];
+
+int cmp(Node x,Node y){
+    return !x.flag || !y.flag ? x.flag > y.flag : x.key < y.key;    //这个写cmp的写法很棒
+}
+int main(){
+    int n,cnt = 0,s,a=0,b=0,c=0;
+    scanf("%d%d",&n,&s);
+    for(int i = 0;i < n;i++){
+        scanf("%d%d%d",&a,&b,&c);
+        node[a] = {a,b,c,false};        //使用了结构体的默认构造
+    }
+    while(s!=-1){
+        node[s].flag = true;
+        cnt++;
+        s = node[s].next;
+    }
+
+    if(cnt==0){
+        printf("0 -1");
+    }else{
+        sort(node,node+100000,cmp);     //这里可以知道，如果声明一个数组，就会将所有的元素初始化，结点数组也不例外
+        printf("%d %05d\n",cnt,node[0].address);
+        for(int i = 0;i < cnt;i++){
+            printf("%05d %d ",node[i].address,node[i].key);
+            if(i!=cnt-1){
+                printf("%05d\n",node[i+1].address);
+            }else{
+                printf("-1\n");
+            }
+        }
+    }
+
+    return 0;
+}

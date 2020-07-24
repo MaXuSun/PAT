@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <iostream>
+#include <map>
+#include <vector>
+#include <algorithm>
+#define MAXN 210
+#define INF 0x7fffffff
+using namespace std;
+
+int n,root,G[MAXN][MAXN];
+bool vis[MAXN]={false}; 
+int weight[MAXN],dis[MAXN],minroad[MAXN];   //点权，最小距离，最小距离路径个数
+vector<int> pre[MAXN];                      //先序结点
+vector<int> path,tempPath;                  //路径
+
+//字符串与数字间互相转换
+int numCity = 0;
+map<int,string> int2str;
+map<string,int> str2int;
+
+int maxhappy=-1,maxavghappy=-1;             //最大快乐，最大平均快乐
+
+int change(string str){
+    if(str2int.find(str)!=str2int.end()){
+        return str2int[str];
+    }else{
+        str2int[str] = numCity;
+        int2str[numCity] = str;
+        return numCity++;
+    }
+}
+
+void Dijkstra(int s){
+    fill(dis,dis+MAXN,INF);
+    fill(minroad,minroad+MAXN,0);
+    dis[s] = 0;
+    minroad[s] = 1;
+
+    for(int i = 0;i < n;i++){
+        int u = -1,MIN = INF;
+        for(int j = 0;j < n;j++){
+            if(!vis[j]&&dis[j]<MIN){
+                u = j;
+                MIN = dis[j];
+            }
+        }
+        if(u==-1)return;
+        vis[u] = true;
+        for(int v = 0;v < n;v++){
+            if(!vis[v]&&G[u][v]!=INF){
+                if(dis[u]+G[u][v] < dis[v]){
+                    dis[v] = dis[u]+G[u][v];
+                    pre[v].clear();
+                    pre[v].push_back(u);
+                    minroad[v]=minroad[u];
+                }else if(dis[u]+G[u][v] == dis[v]){
+                    pre[v].push_back(u);
+                    minroad[v]+=minroad[u];
+                }
+            }
+        }
+    }
+}
+
+void DFS(int u){
+    if(u==root){    //如果遍历到叶子结点
+        tempPath.push_back(u);
+        //计算第二三尺标
+        int happy=0,avghappy;
+        for(int i = 0;i < tempPath.size();i++){
+            happy+=weight[tempPath[i]];
+        }
+        avghappy = happy/(tempPath.size()-1);
+        if(happy>maxhappy){
+            maxhappy = happy;
+            maxavghappy = avghappy;
+            path = tempPath;
+        }else if(happy == maxavghappy && avghappy > maxavghappy){
+            maxavghappy = avghappy;
+            path = tempPath;
+        }
+        tempPath.pop_back();
+        return;
+    }
+
+    tempPath.push_back(u);
+    for(int i = 0;i < pre[u].size();i++){
+        DFS(pre[u][i]);
+    }
+    tempPath.pop_back();
+
+}
+
+int main(){
+    int k,w;
+    string a,b;
+    fill(G[0],G[0]+MAXN*MAXN,INF);
+    fill(weight,weight+MAXN,0);
+
+    cin >> n >>k>>a;
+    root = change(a);
+    for(int i = 1;i < n;i++){
+        cin >> a >> w;
+        weight[change(a)] = w;
+    }
+    for(int i = 0;i < k;i++){
+        cin >> a >> b >> w;
+        int u = change(a),v = change(b);
+        G[u][v] = G[v][u] = w;
+    }
+    int endv = str2int["ROM"];
+    Dijkstra(root);
+    DFS(endv);
+
+    printf("%d %d %d %d\n",minroad[endv],dis[endv],maxhappy,maxavghappy);
+    int len = path.size()-1;
+    cout << int2str[path[len]];
+    for(int i = len-1;i >= 0;i--){
+        printf("->%s",int2str[path[i]].c_str());
+    }
+    return 0;
+}

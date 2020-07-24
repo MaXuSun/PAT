@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#define MAXN 110
+using namespace std;
+
+typedef struct node{
+    int key,lchild,rchild;
+    node(){
+        key = -1,lchild=-1,rchild=-1;
+    }
+}Node;
+int n,l,r;
+Node T[MAXN];
+bool inq[MAXN]={false};
+vector<int> weight;
+vector<int> result;
+
+bool cmp(int a,int b){
+    return a > b;
+}
+
+void levelOrder(int s){
+    queue<int> q;
+    Node start = T[s];
+    inq[s]=true;
+    q.push(s);
+
+    while(!q.empty()){
+        int u = q.front();
+        Node top = T[u];
+        q.pop();
+
+        result.push_back(top.key);
+
+        if(top.lchild!=-1&&!inq[top.lchild])q.push(top.lchild);
+        if(top.rchild!=-1&&!inq[top.rchild])q.push(top.rchild);
+    }
+}
+
+void preOrder(int s){
+    if(s==-1)return;
+    preOrder(T[s].lchild);
+    T[s].key = weight.back();
+    weight.pop_back();
+    preOrder(T[s].rchild);
+}
+
+int main(){
+    scanf("%d",&n);
+    weight.resize(n);
+    for(int i = 0;i < n;i++){
+        scanf("%d%d",&T[i].lchild,&T[i].rchild);
+    }
+    for(int i = 0;i < n;i++){
+        scanf("%d",&weight[i]);
+    }
+    sort(weight.begin(),weight.end(),cmp);
+    preOrder(0);
+    levelOrder(0);
+    printf("%d",result[0]);
+    for(int i = 1;i < result.size();i++){
+        printf(" %d",result[i]);
+    }
+    return 0;
+}

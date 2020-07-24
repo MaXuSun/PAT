@@ -1,0 +1,61 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#define MAXN 1010
+using namespace std;
+typedef struct node{
+    int k;
+    int lchild,rchild;
+}Node;
+Node T[MAXN];
+vector<int> key,level;
+int n,index=0;
+
+void initT(){
+    for(int i = 1;i < MAXN;i++){
+        T[i].lchild = 2*i;
+        T[i].rchild = 2*i+1;
+    }
+}
+
+void inOrder(int s){
+    if(s>n)return;
+    inOrder(T[s].lchild);
+    T[s].k = key[index++];
+    inOrder(T[s].rchild);
+}
+
+void BFS(int s){
+    queue<Node> q;
+    q.push(T[s]);
+    while(!q.empty()){
+        Node top = q.front();
+        q.pop();
+        level.push_back(top.k);
+        if(top.lchild<=n)q.push(T[top.lchild]);
+        if(top.rchild<=n)q.push(T[top.rchild]);
+    }
+
+}
+
+int main(){
+    cin >> n;
+    int a;
+    initT();        //初始化完全二叉树
+    for(int i = 1;i <= n;i++){
+        cin >> a;
+        key.push_back(a);
+    }
+    //二叉查找树的中序就是有序数组
+    sort(key.begin(),key.end());    //排序
+    inOrder(1);                     //中序遍历将数据放到完全二叉树中
+    BFS(1);                         //层序遍历
+    //打印
+    for(int i = 0;i < level.size();i++){
+        if(i!=0)printf(" ");
+        printf("%d",level[i]);
+    }
+
+    return 0;
+}

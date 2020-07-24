@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#define MAXN 510
+#define INF 0x7fffffff
+using namespace std;
+
+int n,m,s,d,G[MAXN][MAXN],C[MAXN][MAXN];
+int dis[MAXN];
+int pre[MAXN],cost[MAXN];
+bool vis[MAXN]={false};
+
+void Dijkstra(int s){
+    fill(dis,dis+MAXN,INF);
+    fill(cost,cost+MAXN,INF);
+    fill(pre,pre+MAXN,-1);
+    dis[s]=0;
+    cost[s]=0;
+    for(int i = 0;i < n;i++){
+        int u=-1,MIN = INF;
+        for(int j = 0;j < n;j++){
+            if(!vis[j]&&dis[j]<MIN){
+                MIN = dis[j];u=j;
+            }
+        }
+        if(u==-1)return;
+        vis[u]=true;
+        for(int v = 0;v < n;v++){
+            if(!vis[v]&&G[u][v]!=INF){
+                if(dis[u]+G[u][v]<dis[v]){
+                    dis[v]=dis[u]+G[u][v];
+                    cost[v]=cost[u]+C[u][v];
+                    pre[v]=u;
+                }else if(dis[u]+G[u][v]==dis[v] && cost[u]+C[u][v] < cost[v]){
+                    cost[v]=cost[u]+C[u][v];
+                    pre[v]=u;
+                }
+            }
+        }
+    }
+}
+void DFS(int s,int d){
+    if(s==d){
+        printf("%d ",s);
+        return;
+    }
+    DFS(s,pre[d]);
+    printf("%d ",d);
+}
+
+int main(){
+    scanf("%d%d%d%d",&n,&m,&s,&d);
+    int u,v;
+    fill(G[0],G[0]+MAXN*MAXN,INF);
+    fill(C[0],C[0]+MAXN*MAXN,INF);
+
+    for(int i = 0;i < m;i++){
+        scanf("%d%d",&u,&v);
+        scanf("%d%d",&G[u][v],&C[u][v]);
+        G[v][u] = G[u][v];
+        C[v][u] = C[u][v];
+    }
+    Dijkstra(s);
+    DFS(s,d);
+    printf("%d %d",dis[d],cost[d]);
+    return 0;
+}

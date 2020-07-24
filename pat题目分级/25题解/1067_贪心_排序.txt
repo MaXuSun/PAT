@@ -1,0 +1,32 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#define MAXN 100010
+using namespace std;
+int data[MAXN],sit[MAXN];      //sit记录数字 index 所占用的位置
+// 0 1 2 3 4 5 6 7 8 9
+// 3 5 7 2 6 4 9 0 8 1
+int main(){
+    int n,a,index0;
+    cin >> n;
+    for(int i = 0;i < n;i++){
+        cin >> a;
+        sit[a] = i;     //这里，无论是sit[i]=a还是sit[a]=i得到得结果都对，因为
+                        //可以看成将人放到座位上,也可以看成将座位分给人
+    }
+    int cnt=0;
+    for(int i = 1;i < n;i++){
+        if(i!=sit[i]){      //如果i所在的位置不是i
+            while(sit[0]!=0){       //如果0不在自己座位上，就一直换
+                swap(sit[0],sit[sit[0]]);
+                cnt++;
+            }
+            if(i!=sit[i]){          //这种情况是一小部分人对，一部分人不对，但是0对了，这就要让0把位置让出来
+                swap(sit[0],sit[i]);
+                cnt++;
+            }
+        }
+    }
+    printf("%d",cnt);
+    return 0;
+}

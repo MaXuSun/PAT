@@ -1,0 +1,42 @@
+#include <iostream>
+#include <stdio.h>
+#include <queue>
+#include <stack>
+#include <algorithm>
+using namespace std;
+
+int m,k,n;//最大栈能力，序列长度，检测个数
+queue<int> q;
+stack<int> s;
+bool is(){
+    for(int j = 1;j <= k;j++){
+        s.push(j);
+        if(s.size()>m)return false;
+        while(!s.empty()&&s.top()==q.front()){
+            s.pop();
+            q.pop();
+        }
+    }
+    if(!s.empty())return false;
+    return true;
+}
+
+int main(){
+    int temp;
+    scanf("%d%d%d",&m,&k,&n);
+    for(int i = 0;i < n;i++){
+        int flag = 0;
+        for(int j = 0;j < k;j++){
+            scanf("%d",&temp);
+            q.push(temp);
+        }
+        if(is()){
+            printf("YES\n");
+        }else{
+            printf("NO\n");
+        }
+        while(!s.empty())s.pop();
+        while(!q.empty())q.pop();
+    }
+    return 0;
+}

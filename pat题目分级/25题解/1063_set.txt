@@ -1,0 +1,35 @@
+#include <iostream>
+#include <stdio.h>
+#include <set>
+
+using namespace std;
+
+int main()
+{
+    int N,k;
+    scanf("%d",&N);
+    set<int> nums[N+1];
+    for(int i = 1;i <= N;i++){
+        int n = 0;
+        scanf("%d",&n);
+        for(int j = 1;j <= n;j++){
+            int temp = 0;
+            scanf("%d",&temp);
+            nums[i].insert(temp);
+        }
+    }
+    scanf("%d",&k);
+    for(int i = 0;i < k;i++){
+        int a,b,sum=0;
+        float result = 0;
+        scanf("%d %d",&a,&b);
+        for(set<int>::iterator it=nums[a].begin();it!=nums[a].end();it++){
+            if(nums[b].count(*it)==1){
+                sum++;
+            }
+        }
+
+        printf("%.1f%%\n",100.0*sum/(nums[a].size()+nums[b].size()-sum));
+    }
+    return 0;
+}

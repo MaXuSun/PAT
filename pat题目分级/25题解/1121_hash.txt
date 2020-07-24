@@ -1,0 +1,52 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+#define MAXN 100000
+#include <hash_set>
+using namespace std;
+using namespace __gnu_cxx;
+
+bool Sigle[MAXN];
+int couple[MAXN];
+bool result[MAXN]={false};
+//hash_set<int> result;
+
+int main(){
+    int n,a,b;
+    fill(Sigle,Sigle+MAXN,true);
+    fill(couple,couple+MAXN,0);
+    scanf("%d",&n);
+    for(int i = 0;i < n;i++){
+        scanf("%d %d",&a,&b);
+        Sigle[a]=false; Sigle[b]=false;
+        couple[a] = b,couple[b]=a;
+    }
+    scanf("%d",&n);
+    int cnt = 0;
+    for(int i = 0;i < n;i++){
+        scanf("%d",&a);
+        if(Sigle[a]){
+            result[a]=true;
+            cnt++;
+        }else if(result[couple[a]]==false){
+            result[a]=true;
+            cnt++;
+        }else if(result[couple[a]]==true){
+            result[couple[a]]=false;
+            cnt--;
+        }
+    }
+    printf("%d\n",cnt);
+    cnt=0;
+    for(int i = 0;i < MAXN;i++){
+        if(result[i]==false)continue;
+        if(cnt==0){
+            cnt=1;
+            printf("%05d",i);
+        }else{
+            printf(" %05d",i);
+        }
+    }
+    return 0;
+}

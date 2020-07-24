@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string.h>
+using namespace std;
+typedef struct node{
+    char name[10];
+    int age,money;
+}Node;
+
+int cmp(Node a,Node b){
+    if(a.money==b.money){
+        if(a.age==b.age){
+            return strcmp(a.name,b.name)<0;
+        }else return a.age < b.age;
+    }else return a.money > b.money;
+}
+
+int main(){
+    int n,m;
+    vector<Node> person;
+    scanf("%d%d",&n,&m);
+    for(int i = 0;i < n;i++){
+        Node temp;
+        scanf("%s %d %d",&temp.name,&temp.age,&temp.money);
+        person.push_back(temp);
+    }
+
+    sort(person.begin(),person.end(),cmp);
+    int num,low,up,cnt;
+    for(int i = 1;i <= m;i++){
+        scanf("%d%d%d",&num,&low,&up);
+        printf("Case #%d:\n",i);
+        cnt = 0;
+        for(int j = 0;j < person.size();j++){
+            if(cnt==num)break;
+            Node p = person[j];
+            if(p.age<=up&&p.age>=low){
+                printf("%s %d %d\n",p.name,p.age,p.money);
+                cnt++;
+            }
+        }
+        if(cnt==0){
+            printf("None\n");
+        }
+    }
+    return 0;
+}

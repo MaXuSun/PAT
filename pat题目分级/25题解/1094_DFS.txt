@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <math.h>
+#define inf 99999999
+#define MAXN 110
+using namespace std;
+
+int n,root;
+vector<vector<int> > G;
+bool vis[MAXN] = {false};
+double p,r;
+double price=0;
+int num[MAXN]={0};
+
+void DFS(int u,int depth){
+    vis[u] = true;
+    num[depth]++;
+    for(int i = 0;i < G[u].size();i++){
+        int v = G[u][i];
+        if(!vis[v]){
+            DFS(v,depth+1);
+        }
+    }
+}
+
+int main(){
+    int m,u,v,k;
+    root = 1;
+    cin >> n >> m;
+    G.resize(n+1);
+    for(int i = 0;i < m;i++){
+        cin >> u >> k;
+        for(int j = 0;j < k;j++){
+            cin >> v;
+            G[u].push_back(v);
+        }
+    }
+    DFS(1,1);
+    int max_num=-1,index=0;
+    for(int i = 0;i < MAXN;i++){
+        if(num[i]>max_num){
+            index = i;
+            max_num = num[i];
+        }
+    }
+    cout << max_num << " " << index;
+    return 0;
+}

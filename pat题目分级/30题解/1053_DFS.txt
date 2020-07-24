@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+vector<int> T[110];
+int weight[110]={0};
+int n,m,S;
+vector<int> path;
+
+int cmp(int a,int b){
+    return weight[a] > weight[b];
+}
+
+void DFS(int s,int sum){
+    if(sum>S)return;
+    if(sum==S){
+        if(T[s].size()!=0)return;
+        path.push_back(s);
+        for(int i = 0;i < path.size()-1;i++){
+            printf("%d ",weight[path[i]]);
+        }
+        printf("%d\n",weight[path[path.size()-1]]);
+        path.pop_back();
+    }
+    path.push_back(s);
+    for(int i = 0;i < T[s].size();i++){
+        int v = T[s][i];
+        DFS(v,sum+weight[v]);
+    }
+    path.pop_back();
+}
+
+int main(){
+    int u,k,v;
+    scanf("%d%d%d",&n,&m,&S);
+    for(int i = 0;i < n;i++){
+        scanf("%d",&weight[i]);
+    }
+    for(int i = 0;i < m;i++){
+        scanf("%d%d",&u,&k);
+        for(int j = 0;j < k;j++){
+            scanf("%d",&v);
+            T[u].push_back(v);
+        }
+        sort(T[u].begin(),T[u].end(),cmp);      //这个比较很有灵性,避免了对路径的排序
+    }
+    DFS(0,weight[0]);
+
+    return 0;
+}

@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <map>
+#include <vector>
+using namespace std;
+
+typedef struct node{
+    string name;
+    int tws,ns;
+}Node;
+
+map<string,double> tws;
+map<string,int> ns;
+
+bool cmp(Node &a,Node &b){
+    if(a.tws==b.tws){
+        if(a.ns==b.ns){
+            return a.name < b.name;
+        }
+        return a.ns < b.ns;
+    }
+    return a.tws > b.tws;
+}
+
+string tolow(string str){
+    for(int i = 0;i < str.size();i++){
+        if(str[i]>='A'&&str[i]<='Z'){
+            str[i] = str[i]-'A'+'a';
+        }
+    }
+    return str;
+}
+
+double getScore(string str,int score){
+    if(str[0]=='A')return score;
+    else if(str[0]=='T'){
+        return score*1.5;
+    }else if(str[0]=='B'){
+        return score/1.5;
+    }
+}
+
+int main(){
+    int n,score;
+    string stu,scl;
+    cin >> n;
+    for(int i = 0;i < n;i++){
+        cin >> stu>> score >> scl;
+        scl = tolow(scl);
+        tws[scl]+=getScore(stu,score);
+        ns[scl]++;
+    }
+
+    vector<Node> results;
+    printf("%d\n",tws.size());
+    for(map<string,double>::iterator it = tws.begin();it!=tws.end();it++){
+        Node temp;
+        temp.name = it->first;
+        temp.tws = (int)it->second;
+        temp.ns = ns[temp.name];
+        results.push_back(temp);
+    }
+
+    sort(results.begin(),results.end(),cmp);
+    int ranks = 1,max_score=results[0].tws;
+    for(int i = 0;i < results.size();i++){
+        Node re = results[i];
+        if(re.tws==max_score){
+            cout << ranks << " ";
+        }else{
+            cout << i+1 << " ";
+            ranks = i+1;
+            max_score = re.tws;
+        }
+        cout << re.name << " " << re.tws << " " << re.ns << endl;
+    }
+
+    return 0;
+}

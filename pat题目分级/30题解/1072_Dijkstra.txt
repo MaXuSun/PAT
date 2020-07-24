@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string>
+#include <set>
+#include <math.h>
+#define MAXN 1100
+#define INF 99999999
+using namespace std;
+
+int n,m,k,ds,G[MAXN][MAXN];
+bool vis[MAXN]={false};
+int dis[MAXN],mind[20];
+set<int> allvs;
+float avg[20],minavg=INF;
+int maxd=-1;
+
+//½«Gi×ª³Éi+n
+int change(string str){
+    str.erase(0,1);
+    return atoi(str.c_str())+n;
+}
+
+void Dijkstra(int s){
+    fill(dis,dis+MAXN,INF);
+    fill(vis,vis+MAXN,false);
+    dis[s] = 0;
+    for(int i = 0;i < n+m;i++){
+        int u = -1,MIN = INF;
+        for(int i = 1;i <= m+n;i++){
+            if(!vis[i]&&dis[i]<MIN){
+                MIN = dis[i];u=i;
+            }
+        }
+        if(u==-1)return;
+        vis[u]=true;
+        for(int v = 1;v <= m+n;v++){
+            if(!vis[v]&&G[u][v]!=INF){
+                if(dis[u]+G[u][v]<dis[v]){
+                    dis[v] = dis[u]+G[u][v];
+                }
+            }
+        }
+    }
+    int flag = 1;
+    float sum=0;
+    int MIND=INF;
+
+    for(int i = 1;i <= n;i++){
+        if(dis[i]>ds)flag = 0;
+        sum+=dis[i];
+        if(dis[i]<MIND)MIND = dis[i];
+    }
+
+    if(flag==1){
+        avg[s-n]=sum/n;
+        if(MIND > maxd){
+            maxd = MIND;
+            allvs.clear();
+            allvs.insert(s-n);
+            minavg = avg[s-n];
+        }else if(MIND==maxd){
+            allvs.insert(s-n);
+            minavg = (minavg<avg[s-n])?minavg:avg[s-n];
+        }
+    }
+}
+
+int main(){
+    string a,b;
+    int w,u,v;
+    fill(G[0],G[0]+MAXN*MAXN,INF);
+    fill(avg,avg+20,INF);
+    fill(mind,mind+20,INF);
+    cin >> n >> m >> k >> ds;
+    for(int i = 0;i < k;i++){
+        cin >> a >> b >> w;
+        u = (a[0]!='G')?atoi(a.c_str()):change(a);
+        v = (b[0]!='G')?atoi(b.c_str()):change(b);
+        G[u][v] = G[v][u] = w;
+    }
+    for(int i = n+1;i<=m+n;i++){
+        Dijkstra(i);
+    }
+    if(allvs.size()==0){
+        printf("No Solution");
+    }else if(allvs.size()==1){
+        int re = *allvs.begin();
+        printf("G%d\n",re);
+        printf("%.1f %.1f",maxd*1.0,avg[re]);
+    }else{
+        set<int> result;
+        for(set<int>::iterator it = allvs.begin();it!=allvs.end();it++){
+            if(fabs(avg[*it]-minavg)<1e-5){
+                result.insert(*it);
+            }
+        }
+        int re = *result.begin();
+        printf("G%d\n",re);
+        printf("%.1f %.1f",maxd*1.0,avg[re]);
+    }
+    return 0;
+}

@@ -1,0 +1,55 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <stack>
+#include <algorithm>
+using namespace std;
+
+stack<int> s;
+vector<int> pre;
+vector<int> in;
+vector<int> post;
+int n;
+
+void getPost(int preL,int preR,int inL,int inR){
+    if(preL>preR) return;       //递归边界
+    else if(preL==preR){
+        post.push_back(pre[preL]);
+        return;
+    }
+
+    int k;                      //找到根节点
+    for(k = inL;k <= inR;k++){
+        if(pre[preL]==in[k])break;
+    }
+
+    int len = k-inL;            //左子树序列长度
+
+    getPost(preL+1,preL+len,inL,k-1);       //左子树
+    getPost(preL+1+len,preR,k+1,inR);       //右子树
+    post.push_back(pre[preL]);              //获得结点
+}
+
+int main(){
+    scanf("%d",&n);
+    string temp;
+    int a;
+    for(int i = 0; i < 2*n;i++){
+        cin >> temp;
+        if(temp=="Push"){
+            cin >> a;
+            s.push(a);
+            pre.push_back(a);
+        }else if(temp=="Pop"){
+            in.push_back(s.top());
+            s.pop();
+        }
+    }
+
+    getPost(0,n-1,0,n-1);
+    for(int i = 0;i < post.size();i++){
+        if(i!=0)printf(" ");
+        cout << post[i];
+    }
+    return 0;
+}

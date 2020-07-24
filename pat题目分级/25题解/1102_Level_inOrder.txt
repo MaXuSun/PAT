@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <cctype>
+#include <queue>
+#define MAXN 11
+using namespace std;
+//考察树的层序遍历和中序遍历
+typedef struct node{
+    int left;
+    int right;
+}Node;
+int n,root;
+Node G[MAXN];
+bool vis[MAXN] = {false};
+bool isroot[MAXN]={false};
+vector<int> in;
+vector<int> level;
+
+void find_root(){
+    for(int i = 0;i < n;i++){
+        if(!isroot[i])root=i;
+    }
+}
+
+void BFS(int s){
+    Node n = G[s];
+    vis[s]=true;
+    queue<int> q;
+    q.push(s);
+    while(!q.empty()){
+        int top = q.front();
+        q.pop();
+        level.push_back(top);
+        Node top_n = G[top];
+        if(top_n.right!=-1)q.push(top_n.right);
+        if(top_n.left!=-1)q.push(top_n.left);
+    }
+}
+
+void in_order(int u){
+    if(u==-1)return;
+    in_order(G[u].left);
+    in.push_back(u);
+    in_order(G[u].right);
+
+}
+
+int main(){
+    cin >> n;
+    char a,b;
+    for(int i = 0;i < n;i++){
+        cin >> a >> b;
+        Node no;
+        no.left = isdigit(a)?(a-'0'):-1;
+        if(no.left!=-1)isroot[no.left]=true;
+        no.right = isdigit(b)?(b-'0'):-1;
+        if(no.right!=-1)isroot[no.right]=true;
+        G[i] = no;
+    }
+    find_root();
+
+    BFS(root);
+    int len = level.size()-1;
+    cout << level[0];
+    for(int i = 1;i <= len;i++)
+        cout << " " << level[i];
+    cout << endl;
+    in_order(root);
+
+    len = in.size()-1;
+    cout << in[len];
+    for(int i = len-1;i >= 0;i--)
+        cout << " " << in[i];
+    return 0;
+}

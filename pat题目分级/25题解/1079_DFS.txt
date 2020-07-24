@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <math.h>
+#define inf 99999999
+#define MAXN 100010
+using namespace std;
+
+// 这次的坑：
+//1. i < G[u].size() 写成 i < n
+//2. 读数据时,下标出错
+int n;
+bool vis[MAXN]={false};
+vector<vector<int> > G;
+int weight[MAXN];
+double all=0;
+double p,r;
+
+void DFS(int u,int depth){
+    vis[u]=true;
+    if(G[u].size()==0){
+        all = all + pow(1+r/100,depth)*weight[u];
+    }
+
+    for(int i = 0;i < G[u].size();i++){
+        int v = G[u][i];
+        if(!vis[v]){
+            DFS(v,depth+1);
+        }
+    }
+}
+
+void DFSTravel(){
+    for(int i = 0;i < n;i++){
+        if(!vis[i]){
+            DFS(i,0);
+        }
+    }
+}
+
+int main(){
+    cin >> n >> p >> r;
+    G.resize(n+1);
+
+    for(int i = 0;i < n;i++){
+        int temp,a;
+        cin >> temp;
+        if(temp==0){
+            cin >> a;
+            weight[i]=a;                //这里 i 写成了temp
+        }else{
+            for(int j = 0;j < temp;j++){
+                cin >> a;
+                G[i].push_back(a);      //这里同样 i 写成了temp
+            }
+        }
+    }
+    DFSTravel();
+    printf("%.1f",all*p);
+    return 0;
+}

@@ -1,0 +1,60 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+//这个结构体设计的很好，不光适用询问1还适用询问2
+typedef struct node{
+    string t;
+    int s;
+}Node;
+
+bool cmp(Node& a,Node& b){
+    if(a.s==b.s)
+        return a.t < b.t;
+    return a.s > b.s;
+}
+
+int main(){
+    int n,m,num;
+    string str;
+    cin >> n>>m;
+    vector<Node> v(n);
+    for(int i = 0;i < n;i++)
+        cin >> v[i].t >> v[i].s;
+    for(int i = 1;i <= m;i++){
+        cin >> num >> str;
+        printf("Case %d: %d %s\n",i,num,str.c_str());
+        vector<Node> ans;
+        int cnt = 0,sum = 0;
+        if(num == 1){
+            for(int j = 0;j < n;j++)
+                if(v[j].t[0]==str[0])ans.push_back(v[j]);
+        }else if(num==2){
+            for(int j = 0;j < n;j++){
+                if(v[j].t.substr(1,3)==str){
+                    cnt++;
+                    sum+=v[j].s;
+                }
+            }
+            if(cnt!=0)printf("%d %d\n",cnt,sum);
+        }else if(num==3){
+            map<string,int> m;
+            for(int j =0 ;j < n;j++){
+                if(v[j].t.substr(4,6)==str)m[v[j].t.substr(1,3)]++;
+            }
+            //同样的结构体复用两次
+            for(auto it: m)ans.push_back({it.first,it.second});
+        }
+        sort(ans.begin(),ans.end(),cmp);
+        for(int j =0;j < ans.size();j++){
+            printf("%s %d\n",ans[j].t.c_str(),ans[j].s);
+        }
+        if(((num==1||num==3)&&ans.size()==0)||(num==2 && cnt==0))
+            printf("NA\n");
+    }
+
+    return 0;
+}

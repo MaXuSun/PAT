@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+typedef struct node{
+    int v;
+    int depth;
+}Node;
+
+bool inq[110]={false};
+vector<Node> Adj[110];
+int max_depth = 1;
+int num[110]={0};
+
+//BFS模板,这里BFS一次可以将将所有结点遍历完
+void BFS(int s){    //初始为s
+    //初始队列，初始开始结点，添加到队列中，添加到inq中
+    queue<Node> q;
+    Node start;
+    start.v = s;
+    start.depth = 1;
+    inq[start.v ]=true;
+    q.push(start);
+
+    while(!q.empty()){      //队列非空就一直遍历下去
+        //取队列头结点并弹出头头结点
+        Node top = q.front();
+        q.pop();
+        int u = top.v;
+
+        //自己的操作
+        if(Adj[u].size()==0){
+            num[top.depth]++;
+             max_depth = (max_depth>top.depth)?max_depth:top.depth;
+        }
+        //取该结点的所有后继结点
+        for(int i = 0;i < Adj[u].size();i++){
+            //更新后继结点的深度
+            Node next = Adj[u][i];
+            next.depth = top.depth+1;
+            if(!inq[next.v]){   //没进过队列，需要进队列中
+                q.push(next);
+                inq[next.v]=true;
+            }
+        }
+    }
+
+}
+
+int main(){
+    int n,m;
+    cin >> n >> m;
+    for(int i = 0;i < m;i++){
+        int u,temp,v;
+        cin >> u >> temp;
+        for(int j = 0;j < temp;j++){
+            cin >> v;
+            Node n;
+            n.v = v;
+            Adj[u].push_back(n);
+        }
+    }
+    BFS(1);
+
+    cout << num[1];
+    for(int i = 2;i <= max_depth;i++){
+        cout << " " << num[i];
+    }
+    return 0;
+}

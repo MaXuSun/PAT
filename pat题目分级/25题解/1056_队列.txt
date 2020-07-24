@@ -1,0 +1,39 @@
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+using namespace std;
+int ng,np;
+int w[1010],res[1010];
+
+int main(){
+    cin >> np >> ng;
+    for(int i = 0;i < np;i++){
+        cin >> w[i];
+    }
+    queue<int> q;
+    for(int i = 0;i < np;i++){
+        int temp;
+        cin >> temp;
+        q.push(temp);
+    }
+    while(q.size()>1){
+        int group = q.size()/ng +(q.size()%ng==0?0:1);
+        int size = q.size();
+        for(int i = 1;i <= group;i++){
+            int len = (i==group)?(size - (group - 1)*ng):ng;
+            int index = q.front();
+            for(int j = 0;j < len;j++){
+                res[q.front()]=group+1; //这里都直接赋值为group+1;如果晋级,后面会被重新赋值
+                index=w[index]>w[q.front()]?index:q.front();
+                q.pop();
+            }
+            q.push(index);
+        }
+    }
+    res[q.front()]=1;
+    for(int i = 0;i < np;i++){
+        cout << res[i] << (i==np-1?"":" ");
+    }
+    return 0;
+}

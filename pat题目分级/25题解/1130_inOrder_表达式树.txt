@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <math.h>
+#include <algorithm>
+#include <vector>
+#define MAXN 25
+using namespace std;
+typedef struct node{
+    char chs[16];
+    int left,right;
+}Node;
+int n,root;
+Node G[MAXN];
+bool is_root[MAXN]={false};
+bool vis[MAXN]={false};
+
+void find_root(){
+    for(int i = 1;i <= n;i++){
+        if(!is_root[i])root=i;
+    }
+}
+
+void in_order(int s){
+    int flag = 0;
+    if(s==-1)return;
+    Node no = G[s];
+    if((no.left!=-1||no.right!=-1)&&s!=root)printf("(");
+    in_order(no.left);
+    printf("%s",no.chs);
+    in_order(no.right);
+    if((no.right!=-1||no.left!=-1)&&s!=root)printf(")");
+}
+
+int main(){
+    scanf("%d",&n);
+    char temp[16];
+    int l,r;
+    for(int i = 1;i <= n;i++){
+        Node no;
+        scanf("%s %d %d",no.chs,&no.left,&no.right);
+        is_root[no.left]=(no.left==-1)?false:true;
+        is_root[no.right]=(no.right==-1)?false:true;
+        G[i]=no;
+    }
+    find_root();
+    in_order(root);
+
+    return 0;
+}

@@ -1,0 +1,87 @@
+#include <iostream>
+#include <stdio.h>
+#define MAXN 100
+using namespace std;
+typedef struct node{
+    int k,lchild,rchild;
+}Node;
+int nodeNum=0;
+Node T[MAXN];
+int n;
+
+int newnode(int k){
+    T[nodeNum].k=k;
+    T[nodeNum].lchild=-1;
+    T[nodeNum].rchild=-1;
+    return nodeNum++;
+}
+//右旋函数
+int rightRotate(int& s){
+    int temp = T[s].lchild;
+    T[s].lchild = T[temp].rchild;
+    T[temp].rchild = s;
+    return temp;
+}
+//左旋函数
+int leftRotate(int& s){
+    int temp = T[s].rchild;
+    T[s].rchild = T[temp].lchild;
+    T[temp].lchild = s;
+    return temp;
+}
+//右子树右旋,树左旋
+int rightLeftRotate(int& s){
+    T[s].rchild = rightRotate(T[s].rchild);
+    return leftRotate(s);
+}
+//左子树左旋,树右旋
+int leftRightRotate(int& s){
+    T[s].lchild = leftRotate(T[s].lchild);
+    return rightRotate(s);
+}
+
+int getH(int s){
+    if(s == -1)return 0;
+    int l = getH(T[s].lchild);
+    int r = getH(T[s].rchild);
+    return max(l,r)+1;
+}
+
+int insertT(int& s,int k){
+    if(s==-1){      //到根新建结点
+        s = newnode(k);
+    }else if(k < T[s].k){           //往左子树插
+        T[s].lchild = insertT(T[s].lchild,k);   //插入完成后
+
+        //注意这里是自底向上逐层调整
+        int l = getH(T[s].lchild),r = getH(T[s].rchild);
+        if(l-r>1){
+            if(k < T[T[s].lchild].k)
+                s = rightRotate(s);
+            else
+                s = leftRightRotate(s);
+        }
+    }else if(k > T[s].k){
+        T[s].rchild = insertT(T[s].rchild,k);
+        int l = getH(T[s].lchild),r = getH(T[s].rchild);
+        if(r-l>1){
+            if(k > T[T[s].rchild].k)
+                s = leftRotate(s);
+            else
+                s = rightLeftRotate(s);
+        }
+    }
+    return s;
+}
+
+int main(){
+    int temp,root = -1;
+    scanf("%d",&n);
+    for(int i = 0;i < n;i++){
+        scanf("%d",&temp);
+        root = insertT(root,temp);
+    }
+    printf("%d",T[root].k);
+    return 0;
+}
+

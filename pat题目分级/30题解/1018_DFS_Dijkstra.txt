@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#define MAXN 510
+#define INF 0x7fffffff
+using namespace std;
+
+int n,m,Cmax,Sp,numPath=0,G[MAXN][MAXN],weight[MAXN];
+int d[MAXN],minNeed=INF,minRemain = INF;
+bool vis[MAXN]={false};
+vector<int> pre[MAXN];
+vector<int> tempPath,path;
+
+void Dijkstra(int s){
+    fill(d,d+MAXN,INF); //初始化d和d[s]
+    d[s]=0;
+
+    for(int i = 0;i < n;i++){   //n次遍历
+
+        int u=-1,MIN = INF;
+        for(int j=0;j <= n;j++){
+            if(!vis[j]&&d[j]<MIN){
+                u=j;MIN = d[j];
+            }
+        }
+
+        if(u==-1)return;
+        vis[u]=true;
+
+        for(int v = 0;v <= n;v++){
+            if(!vis[v]&&G[u][v]!=INF){
+                if(d[u]+G[u][v]<d[v]){
+                    d[v] = d[u]+G[u][v];
+                    pre[v].clear();
+                    pre[v].push_back(u);
+                }else if(d[u]+G[u][v]==d[v]){
+                    pre[v].push_back(u);
+                }
+            }
+        }
+    }
+}
+
+void DFS(int v){
+    if(v==0){           //递归边界，遇到开始点
+        tempPath.push_back(v);      //开始点放入tempPath中
+        //这里是求该条路径上的第2，第3尺标
+        int need=0,remain = 0;
+            //求的need,remain
+        for(int i = tempPath.size()-1;i>=0;i--){
+            int id = tempPath[i];
+            if(weight[id]>0){
+                remain += weight[id];
+            }else{
+                if(remain +weight[id]>0){
+                    remain+=weight[id];
+                }else{
+                    need-=(weight[id]+remain);
+                    remain = 0;
+                }
+            }
+        }
+        //根据求得的尺标更新
+        if(need<minNeed){
+            minNeed = need;
+            minRemain = remain;
+            path = tempPath;
+        }else if(need == minNeed && remain < minRemain){
+            minRemain = remain;
+            path = tempPath;
+        }
+
+        tempPath.pop_back();        //将加入的结点弹出去
+
+        return;
+    }
+    tempPath.push_back(v);  //将当前访问的结点加入临时路径的最后面
+
+    for(int i = 0;i < pre[v].size();i++){
+        DFS(pre[v][i]);
+    }
+
+    tempPath.pop_back();    //遍历完所有前驱结点，将当前结点删除
+}
+
+int main(){
+    int u,v;
+    fill(G[0],G[0]+MAXN*MAXN,INF);
+    scanf("%d%d%d%d",&Cmax,&n,&Sp,&m);
+    for(int i = 1;i <= n;i++){
+        scanf("%d",&weight[i]);
+        weight[i] -= Cmax/2;
+    }
+    for(int i = 0;i < m;i++){
+        scanf("%d%d",&u,&v);
+        scanf("%d",&G[u][v]);
+        G[v][u]=G[u][v];
+    }
+    Dijkstra(0);
+    DFS(Sp);
+    printf("%d ",minNeed);
+    for(int i = path.size()-1;i>=0;i--){
+        printf("%d",path[i]);
+        if(i>0)printf("->");
+    }
+    printf(" %d",minRemain);
+    return 0;
+}

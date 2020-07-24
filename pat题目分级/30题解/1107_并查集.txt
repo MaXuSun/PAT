@@ -1,0 +1,76 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+#define MAXN 1010
+using namespace std;
+
+int nums[MAXN]={0};         //用来保存每个hobby有多少人
+bool exits[MAXN]={false};   //用来记录数值 i 是否用了
+int father[MAXN];           //并查集
+int result[MAXN]={0};           //保存结果
+
+
+void init(){
+    for(int i = 0;i < MAXN;i++)father[i]=i;
+}
+
+int findFa(int x){
+    if(x == father[x])return x;
+    else{
+        int Fa = findFa(father[x]);
+        father[x] = Fa;
+        return Fa;
+    }
+}
+
+int unionFa(int x,int y){
+    int Fx = findFa(x);
+    int Fy = findFa(y);
+    if(Fx!=Fy){
+        father[Fy] = Fx;
+    }
+    return Fx;
+}
+
+int main(){
+    int n,k,temp;
+    init();
+
+    scanf("%d",&n);
+
+
+    for(int i = 0;i < n;i++){
+        scanf("%d: %d",&k,&temp);
+        exits[temp]=true;nums[temp]++;
+        int m = temp;
+        for(int j = 0;j < k-1;j++){
+            scanf("%d",&temp);
+            exits[temp]=true;
+            unionFa(m,temp);
+        }
+    }
+
+    for(int i = 0;i < MAXN;i++){
+        if(exits[i]){
+            int root = findFa(i);
+            result[root]+=nums[i];
+        }
+    }
+
+    int cnt = 0;
+    vector<int> re;
+    for(int i = 0;i < MAXN;i++){
+        if(exits[i]&&result[i]>0){
+            re.push_back(result[i]);
+            cnt++;
+        }
+    }
+    sort(re.begin(),re.end(),greater<int>());
+    printf("%d\n%d",cnt,re[0]);
+    for(int i = 1;i < re.size();i++){
+        printf(" %d",re[i]);
+    }
+
+    return 0;
+}

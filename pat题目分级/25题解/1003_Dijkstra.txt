@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#define inf 99999999
+using namespace std;
+
+int n;
+bool vis[510]={false};  //是否遍历过
+int G[510][510];        //图
+int weight[510]={0};    //记录点权
+int w[510]={0};     //记录最大点权
+int d[510];         //记录最短路径
+int num[510]={0};   //记录最短路径数量
+
+void Dijkstra(int s){
+	//这里需要注意，不能用d[510]={inf},妈蛋，这个bug找好久
+    fill(d,d+510,inf);	
+
+    d[s] = 0;   //初始距离
+    num[s] = 1; //初始最短路径数量
+    w[s]=weight[s]; //初始点权
+
+    // n 次循环，每次找一个点
+    for(int i = 0;i < n;i++){
+        //每次找到距离s最短的点
+        int u = -1,MIN = inf;
+        for(int j = 0; j< n;j++){
+            if(!vis[j]&&d[j]<MIN){
+                u = j;
+                MIN = d[j];
+            }
+        }
+        if(u==-1)return;    //找不到就返回
+        vis[u]=true;        //记录 u 被遍历
+
+        for(int v = 0;v < n;v++){   //遍历与它相邻的结点
+            if(!vis[v]&&G[u][v]!=inf){
+
+                if(d[u]+G[u][v]<d[v]){  //分小于和等于更新
+                    d[v]=d[u]+G[u][v];
+                    w[v]=w[u]+weight[v];
+                    num[v] = num[u];
+                }else if(d[u]+G[u][v]==d[v]){
+                    num[v] += num[u];
+                    if(w[u]+weight[v] > w[v]){
+                        w[v] = w[u] + weight[v];
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+int main(){
+    int m,c1,c2;
+    cin >> n >> m >> c1 >> c2;
+    fill(G[0],G[0]+510*510,inf);
+    for(int i = 0;i < n;i++){
+        scanf("%d",&weight[i]);
+    }
+    for(int i = 0;i < m;i++){
+        int a,b,d;
+        cin >> a >> b >> d;
+        //无向图需记录两个值
+        G[a][b] = d;
+        G[b][a] = d;
+    }
+    Dijkstra(c1);
+
+    cout << num[i] << " "<< w[i];
+
+    return 0;
+}

@@ -1,0 +1,89 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <math.h>
+#include <string.h>
+#include <unordered_map>
+#define MAXN 1000
+using namespace std;
+
+int nodeNum=0;
+typedef struct node{
+    int flag;
+    int key,lchild,rchild;
+}Node;
+Node RBT[MAXN];
+vector<int> pre,in;
+unordered_map<int,int> flags;
+int m,n,u,v;
+
+int newnode(int key,int flag){
+    RBT[nodeNum].key = key;
+    RBT[nodeNum].lchild=-1;
+    RBT[nodeNum].rchild=-1;
+    RBT[nodeNum].flag=flag;
+    return nodeNum++;
+}
+//这是求树高的代码(这里只判断黑节点)
+int getPath(int s){
+    if(s == -1)return 0;
+    int l = getPath(RBT[s].lchild);
+    int r = getPath(RBT[s].rchild);
+    return RBT[s].flag >0 ?max(l,r)+1:max(l,r);
+}
+
+bool judge1(int s){
+    if(s==-1)return true;
+    if(RBT[s].flag<0){
+        if(RBT[s].lchild!=-1&&RBT[RBT[s].lchild].flag<0)return false;
+        if(RBT[s].rchild!=-1&&RBT[RBT[s].rchild].flag<0)return false;
+    }
+    return judge1(RBT[s].lchild)&&judge1(RBT[s].rchild);
+}
+//这是判断左右子树高度是否相等的代码
+bool judge2(int s){
+    if(s==-1)return true;
+    int l = getPath(RBT[s].lchild);
+    int r = getPath(RBT[s].rchild);
+    if(l!=r)return false;
+    return judge2(RBT[s].rchild)&&judge2(RBT[s].lchild);
+}
+
+int getTree(int preL,int preR,int inL,int inR){
+    if(preL>preR)return -1;
+    int k;
+    for(k = inL;k <= inR;k++){
+        if(pre[preL]==in[k])break;
+    }
+    int len = k-inL;
+    int r = newnode(pre[preL],flags[pre[preL]]);
+    RBT[r].lchild = getTree(preL+1,preL+len,inL,k-1);
+    RBT[r].rchild = getTree(preL+len+1,preR,k+1,inR);
+    return r;
+}
+
+int main(){
+    cin >> m;
+    for(int i = 0;i < m;i++){
+        pre.clear(),in.clear(),flags.clear();
+        cin >> n;
+        for(int j = 0;j < n;j++){
+            cin >> u;
+            flags[abs(u)]=u/abs(u);
+            pre.push_back(abs(u));
+            in.push_back(abs(u));
+        }
+        sort(in.begin(),in.end());
+        if(flags[pre[0]]<0){
+            printf("No\n");continue;
+        }
+        int root = getTree(0,n-1,0,n-1);
+        if(judge1(root)==false||judge2(root)==false){
+            printf("No\n");
+        }else{
+            printf("Yes\n");
+        }
+        memset(RBT,0,sizeof(Node)*MAXN);
+    }
+    return 0;
+}

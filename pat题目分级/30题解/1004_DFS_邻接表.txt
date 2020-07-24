@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+bool vis[110]={false};
+vector<int> G[110];
+int max_depth=-1;
+int num[110]={0};
+
+//DFS模板
+void DFS(int u,int depth){
+    vis[u] = true;
+
+    if(G[u].size()==0){
+        num[depth]++;
+    }
+    max_depth=(max_depth>depth)?max_depth:depth;
+
+    //写这里时出了些问题，这里最好用v=G[u][i],刚开始直接传进去 v 了，所以段错误
+    for(int i = 0;i < G[u].size();i++){
+        int v=G[u][i];
+        if(!vis[v]){
+            DFS(v,depth+1);
+        }
+    }
+}
+
+//这里DFSTravel的写法同上
+
+int main(){
+    int n,m;
+    cin >> n >> m;
+    for(int i = 0;i < m;i++){
+        int u,v,temp;
+        cin >> u >> temp;
+        for(int j = 0;j < temp;j++){
+            cin >> v;
+            G[u].push_back(v);
+        }
+    }
+    DFS(1,1);
+
+    cout << num[1];
+    for(int i = 2;i <= max_depth;i++){
+        cout << " " << num[i];
+    }
+
+    return 0;
+}

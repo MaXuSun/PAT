@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <iostream>
+#include <set>
+#include <map>
+#include <vector>
+#include <algorithm>
+#define MAXN 10000
+#define INF 0x7fffffff
+using namespace std;
+
+int numSta=0,dis[MAXN],pre[MAXN];
+bool vis[MAXN] = {false};
+vector<int> G[MAXN];
+vector<int> road;     //记录路线
+int line[MAXN];
+map<string,int> str2int;
+map<int,string> int2str;
+set<int> cross;
+
+void DFS(int s,int u){
+    if(s==u){
+        road.push_back(s);
+        return;
+    }
+    DFS(s,pre[u]);
+    road.push_back(u);
+}
+
+int change(string str){
+    if(str2int.find(str)!=str2int.end()){
+        return str2int[str];
+    }else{
+        str2int[str] = numSta;
+        int2str[numSta] = str;
+        return numSta++;
+    }
+}
+void Dijkstra(int s){
+    fill(dis,dis+MAXN,INF);
+    fill(vis,vis+MAXN,false);
+    dis[s] = 0;
+    for(int i = 0;i < numSta;i++){
+        int u =-1,MIN = INF;
+        for(int j = 0;j < numSta;j++){
+            if(!vis[j]&&dis[j]<MIN){
+                u = j,MIN = dis[j];
+            }
+        }
+        if(u==-1)return;
+        vis[u] = true;
+        for(int j = 0;j < G[u].size();j++){
+            int v = G[u][j];
+            if(!vis[v]){
+                if(dis[u]+1<dis[v]){
+                    dis[v] = dis[u]+1;
+                    pre[v] = u;
+                }
+            }
+        }
+    }
+}
+
+int main(){
+    int m,k,u,v;
+    string a,b;
+    cin >> m;
+    for(int i = 1;i <= m;i++){
+        cin >> k >> a;
+        u = change(a);
+        line[u]=i;
+        for(int j = 1;j < k;j++){
+            cin >> b;
+            v = change(b);
+            G[u].push_back(v);
+            if(G[u].size()>2)cross.insert(u);
+            G[v].push_back(u);
+            if(G[v].size()>2)cross.insert(v);
+
+            line[v]=i;
+            a = b;
+            u = v;
+        }
+    }
+    cin >> k;
+    for(int i = 0;i < k;i++){
+        cin >> a >> b;
+        u = str2int[a];v = str2int[b];
+        //得到最短路径，并打印站台数
+        Dijkstra(u);
+        DFS(u,v);
+        printf("%d\n",road.size()-1);
+        cout << cross.count(str2int["1204"]);
+        //打印结果
+        int L = line[u],flag = 0;
+        vector<int> result;
+        for(int i = 1;i < road.size()-1;i++){
+            int c1 = road[i];
+            int L1=line[c1];
+            cout << L << " " << L1 <<" " << int2str[c1]<<endl;
+            if(cross.count(c1)==1&&L1!=L)result.push_back(c1);
+            L = L1;
+        }
+        result.push_back(v);
+        for(int i = 0;i < result.size();i++){
+            cout << int2str[result[i]] << " ";
+        }
+        cout << endl;
+        printf("Take Line#%d from %s ",L,a.c_str());
+        for(int i = 0;i < result.size();i++){
+            int first=result[i];
+            int L = line[first];
+            printf("to %s\n",int2str[first].c_str());
+            if(i+1<result.size()){
+                L=line[result[i+1]];
+                printf("Take Line#%d from %s ",L,int2str[first].c_str());
+            }
+        }
+        road.clear();
+    }
+
+    return 0;
+}

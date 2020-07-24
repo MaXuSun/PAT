@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#define inf 99999999
+#define MAXN 1010
+using namespace std;
+
+int n;
+bool vis[MAXN]={false};  //是否遍历过
+int G[MAXN][MAXN]={0};
+int num[MAXN]={0};       //记录去掉i点后,原图有几个子图
+
+//delete_i和add_i是对图去掉i和加上i的操作,因为G[u][v]==1为有边，所以--后变成0就没边了
+void delete_i(int i){
+    for(int j = 1;j <= n;j++){
+        G[i][j]--;
+        G[j][i]--;
+    }
+    G[i][i]++;
+}
+
+void add_i(int i){
+    for(int j = 1;j <= n;j++){
+        G[i][j]++;
+        G[j][i]++;
+    }
+    G[i][i]--;
+}
+
+void DFS(int u){
+    vis[u]=true;
+
+    for(int v = 1;v <= n;v++){
+        if(!vis[v]&&G[u][v]==1){
+            DFS(v);
+        }
+    }
+}
+void DFSTravel(int leave){
+    for(int u = 1;u <= n;u++){
+        if(!vis[u]&&u!=leave){
+            DFS(u);
+            num[leave]++;
+        }
+    }
+}
+
+int main(){
+    int m,k;
+
+    cin >> n >> m >> k;
+    for(int i = 0;i < m;i++){
+        int u,v;
+        cin >> u >> v;
+        G[u][v] = 1;
+        G[v][u] = 1;
+    }
+    for(int i = 0;i < k;i++){
+        int temp;
+        cin >> temp;
+        delete_i(temp);
+        DFSTravel(temp);
+        cout << num[temp]-1 << endl;
+        add_i(temp);
+        fill(vis,vis+MAXN,false);
+    }
+    return 0;
+}

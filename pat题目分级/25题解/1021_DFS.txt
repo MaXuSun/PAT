@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <set>
+#define inf 99999999
+#define MAXN 10010
+using namespace std;
+
+//思路，先DFS一遍找到最深的结点，然后从这个结点里面再随机找一个出来后
+//再遍历一遍，将两次结果放在一起即可
+int n;
+bool vis[MAXN]={false};
+vector<int> G[MAXN];
+int max_depth = -1;
+int com = 0;
+//这里使用两个记录结点的变量，一个话，第二遍遍历会更新第一遍的结果，就会不对了
+set<int> leaf;
+vector<int> temp;
+
+void DFS(int u,int depth){
+    vis[u]=true;
+    if(depth > max_depth){
+        temp.clear();
+        temp.push_back(u);
+        max_depth = depth;
+    }else if(depth == max_depth){
+        temp.push_back(u);
+    }
+
+    for(int i = 0;i < G[u].size();i++){
+        int v = G[u][i];
+        if(!vis[v]){
+            DFS(v,depth+1);
+        }
+    }
+}
+
+void DFSTravel(){
+    for(int u = 1;u <= n;u++){
+        if(!vis[u]){
+            DFS(u,1);
+            if(u==1){
+                for(int j = 0;j < temp.size();j++){
+                    leaf.insert(temp[j]);
+                }
+            }
+            com++;
+        }
+    }
+}
+
+int main(){
+    cin >> n;
+    for(int i = 0;i < n-1;i++){
+        int u,v;
+        cin >> u >> v;
+        G[u].push_back(v);
+        G[v].push_back(u);
+    }
+    DFSTravel();
+    fill(vis,vis+MAXN,false);
+    DFS(*leaf.begin(),1);
+    for(int i = 0;i < temp.size();i++){
+        leaf.insert(temp[i]);
+    }
+    if(com>1){
+        printf("Error: %d components",com);
+    }else{
+        for(set<int>::iterator it = leaf.begin();it!=leaf.end();it++){
+            printf("%d\n",*it);
+        }
+    }
+
+    return 0;
+}

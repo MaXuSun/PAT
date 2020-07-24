@@ -1,0 +1,51 @@
+
+#include<iostream>
+#include<algorithm>
+#include<string.h>
+using namespace std;
+ 
+char ch[10][10] = { "ling", "yi", "er", "san", "si", "wu", "liu", "qi", "ba", "jiu" };
+char w[5][5] = { "Shi", "Bai", "Qian", "Wan", "Yi" };
+ 
+void digit(char str[], int len){
+	int left = 0, right = len - 1;
+	if (str[0] == '-'){
+		printf("Fu");
+		left++;
+	}
+	while (left + 4 <= right)
+		right -= 4;
+	while (left < len){
+		bool zero = false;
+		bool exist = false;
+		while (left <= right){
+			if (left>0 && str[left] == '0')
+				zero = true;
+			else{
+				if (zero){
+					printf(" ling");
+					zero = false;
+				}
+				exist = true;
+				if (left > 0)
+					printf(" ");
+				printf("%s", ch[str[left] - '0']);
+				if (left != right){
+					printf(" %s", w[right - left - 1]);
+				}
+			}
+			left++;
+		}
+		if (exist == true && right != len - 1)	
+			printf(" %s", w[(len - right - 1) / 4 + 2]);
+		right += 4;
+	}
+}
+ 
+int main() {
+	char str[20];
+	scanf("%s", &str);
+	int len = strlen(str);
+	digit(str, len);
+	return 0;
+}

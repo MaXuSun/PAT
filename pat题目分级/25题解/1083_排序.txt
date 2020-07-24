@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#define MAXN 100000
+using namespace std;
+
+typedef struct node{
+    string name,id;
+    int grade;
+}Node;
+
+bool cmp(Node a,Node b){
+    return a.grade > b.grade;
+}
+
+int main(){
+    int n;
+    vector<Node> stu;
+    cin >> n;
+    for(int i = 0;i < n;i++){
+        Node student;
+        cin >> student.name >> student.id >> student.grade;
+        stu.push_back(student);
+    }
+    sort(stu.begin(),stu.end(),cmp);
+    int low,up,cnt=0;
+    cin >> low >> up;
+    for(int i = 0;i < stu.size();i++){
+        Node s = stu[i];
+        if(s.grade <= up && s.grade >= low){
+            cout << s.name << " " << s.id << endl;
+            cnt++;
+        }
+    }
+    if(cnt==0)cout << "NONE" <<endl;
+
+    return 0;
+}

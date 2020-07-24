@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string.h>
+using namespace std;
+typedef struct node{
+    char id[20];
+    int a,b;
+}Node;
+
+int cmp(Node x,Node y){
+    if(x.a+x.b==y.a+y.b){
+        if(x.a==y.a){
+            return strcmp(x.id,y.id)<0;
+        }
+        return x.a > y.a;
+    }
+    return x.a+x.b > y.a+y.b;
+}
+
+int main(){
+    int n,L,H;
+    char id[20];
+    int a,b;
+    vector<Node> sage;
+    vector<Node> noblemen;
+    vector<Node> foolmen;
+    vector<Node> smallmen;
+    scanf("%d%d%d",&n,&L,&H);
+    for(int i = 0;i < n;i++){
+        Node temp;
+        scanf("%s",temp.id);
+        scanf("%d%d",&a,&b);
+        temp.a = a;temp.b = b;
+
+        if(a<L||b<L)continue;
+
+        if(b>=H && a>=H){
+            sage.push_back(temp);
+        }else if(b < H && a>=H){
+            noblemen.push_back(temp);
+        }else if(a>=b){
+            foolmen.push_back(temp);
+        }else{
+            smallmen.push_back(temp);
+        }
+    }
+    sort(sage.begin(),sage.end(),cmp);
+    sort(noblemen.begin(),noblemen.end(),cmp);
+    sort(foolmen.begin(),foolmen.end(),cmp);
+    sort(smallmen.begin(),smallmen.end(),cmp);
+
+    printf("%d\n",sage.size()+noblemen.size()+foolmen.size()+smallmen.size());
+    for(int i = 0;i < sage.size();i++){
+        Node temp = sage[i];
+        printf("%s %d %d\n",temp.id,temp.a,temp.b);
+    }
+    for(int i = 0;i < noblemen.size();i++){
+        Node temp = noblemen[i];
+        printf("%s %d %d\n",temp.id,temp.a,temp.b);
+    }
+    for(int i = 0;i < foolmen.size();i++){
+        Node temp = foolmen[i];
+        printf("%s %d %d\n",temp.id,temp.a,temp.b);
+    }
+    for(int i = 0;i < smallmen.size();i++){
+        Node temp = smallmen[i];
+        printf("%s %d %d\n",temp.id,temp.a,temp.b);
+    }
+
+    return 0;
+}

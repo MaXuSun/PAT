@@ -1,0 +1,91 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#define MAXN 100
+using namespace std;
+
+//静态建二叉树
+int nodeNum = 0;
+typedef struct node{
+    int key,flag;
+    int rchild,lchild;
+}Node;
+
+Node T[MAXN];
+bool inq[MAXN]={false};
+vector<int> post;
+vector<int> in;
+vector<int> level[MAXN];
+
+int newnode(int key,int flag){
+    T[nodeNum].key =  key;
+    T[nodeNum].flag = flag;
+    T[nodeNum].lchild=-1;
+    T[nodeNum].rchild=-1;
+    return nodeNum++;
+}
+
+int geneT(int inL,int inR,int postL,int postR,int flag){
+    if(postL > postR)return -1;
+    int root = newnode(post[postR],flag);
+
+    int k;
+    for(k=inL;k<=inR;k++){
+        if(in[k]==post[postR])break;
+    }
+    //后序中序建树的递归方式
+    int len = k-inL;
+    T[root].lchild = geneT(inL,k-1,postL,postL+len-1,flag+1);
+    T[root].rchild = geneT(k+1,inR,postL+len,postR-1,flag+1);
+    return root;
+}
+
+void BFS(int s){
+    queue<Node> q;
+    q.push(T[s]);
+
+    while(!q.empty()){
+        Node top = q.front();
+        level[top.flag].push_back(top.key);
+        q.pop();
+        if(top.lchild!=-1)q.push(T[top.lchild]);
+        if(top.rchild!=-1)q.push(T[top.rchild]);
+    }
+}
+
+int main(){
+    int n,root;
+    cin >> n;
+    in.resize(n);
+    post.resize(n);
+    for(int i = 0;i < n;i++){
+        cin >> in[i];
+    }
+    for(int i = 0;i < n;i++){
+        cin >> post[i];
+    }
+    root = geneT(0,n-1,0,n-1,0);
+    BFS(root);
+    vector<int> re;
+    for(int i = 0;i < MAXN;i++){
+        if(level[i].size()==0)break;
+        if(i%2==1){
+            for(int j = 0;j < level[i].size();j++){
+                re.push_back(level[i][j]);
+
+            }
+        }else{
+            for(int j = level[i].size()-1;j >= 0;j--){
+                re.push_back(level[i][j]);
+            }
+        }
+    }
+
+    for(int i = 0;i < re.size();i++){
+        if(i!=0)printf(" ");
+        printf("%d",re[i]);
+    }
+    return 0;
+}

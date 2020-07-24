@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#define MAXN 1010
+using namespace std;
+vector<int> pre,post,in;
+bool is=true;
+int n;
+
+void getIn(int preL,int preR,int postL,int postR){
+    if(preL > preR) return;
+    else if(preL==preR){
+        in.push_back(pre[preL]);
+        return;
+    }
+    int k;
+    for(k = postL;k <= postR;k++){
+        if(post[k]==pre[preL+1])break;
+    }
+    if(k+1==postR)is=false;
+    int len = k-postL+1;
+    getIn(preL+1,preL+len,postL,k);
+    in.push_back(pre[preL]);
+    getIn(preL+len+1,preR,k+1,postR-1);
+}
+
+int main(){
+   cin >> n;
+    pre.resize(n);post.resize(n);
+    for(int i = 0;i < n;i++)cin >> pre[i];
+    for(int i = 0;i < n;i++)cin >> post[i];
+    getIn(0,n-1,0,n-1);
+
+    printf("%s\n",is?"Yes":"No");
+    for(int i = 0;i < in.size();i++){
+        if(i!=0)printf(" ");
+        printf("%d",in[i]);
+    }
+    printf("\n");
+    return 0;
+}

@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <queue>
+#define MAXN 1010
+#define INF 0x7fffffff
+typedef struct node{
+    int u,level;
+}Node;
+using namespace std;
+int n,L,k;
+vector<Node> G[MAXN];
+bool vis[MAXN] = {false};
+
+void BFS(int s){
+    int nums = 0;
+
+    queue<Node> q;
+    Node no;
+    no.u = s,no.level = 0;
+    vis[no.u] = true;
+    q.push(no);
+
+    while(!q.empty()){
+        Node top = q.front();
+        q.pop();
+        if(top.level>0&&top.level<=L)nums++;
+        for(int i = 0;i < G[top.u].size();i++){
+            Node next = G[top.u][i];
+            next.level = top.level+1;
+            if(!vis[next.u]){
+                q.push(next);
+                vis[next.u] = true;
+            }
+        }
+    }
+    cout << nums << endl;
+}
+
+int main(){
+    int temp,v;
+    cin >> n >> L;
+    for(int i = 1;i <= n;i++){
+        cin >> temp;
+        for(int j = 0;j < temp;j++){
+            Node no;no.u = i;
+            cin >> v;
+            G[v].push_back(no);
+        }
+    }
+    cin >> k;
+    for(int i = 0;i < k;i++){
+        cin >> v;
+        fill(vis,vis+MAXN,false);
+        BFS(v);
+    }
+    return 0;
+}

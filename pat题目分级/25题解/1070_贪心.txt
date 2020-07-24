@@ -1,0 +1,45 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+typedef struct node{
+    float w,p,dan;
+}Node;
+
+vector<Node> v;
+
+bool cmp(Node& a,Node& b){
+    return a.dan > b.dan;
+}
+
+int main(){
+    int n;
+    float m;
+    scanf("%d%f",&n,&m);
+    for(int i = 0;i < n;i++){
+        Node no;
+        scanf("%f",&no.w);
+        v.push_back(no);
+    }
+    for(int i = 0;i < n;i++){
+        scanf("%f",&v[i].p);
+        v[i].dan = v[i].p/v[i].w;
+        //printf("%.5f %.5f %.5f\n",v[i].w,v[i].p,v[i].dan);
+    }
+
+    sort(v.begin(),v.end(),cmp);
+    float re = 0;
+    for(int i = 0;i < n;i++){
+        if(m<=0)break;
+        if(m<=v[i].w){
+            re+=m*v[i].dan;
+            m = 0;
+        }else{
+            re+=v[i].dan*v[i].w;
+            m-=v[i].w;
+        }
+    }
+    printf("%.2f",re);
+    return 0;
+}

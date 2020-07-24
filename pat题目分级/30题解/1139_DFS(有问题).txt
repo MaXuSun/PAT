@@ -1,0 +1,87 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <math.h>
+#include <stdlib.h>
+#include <algorithm>
+#define MAXN 10010
+using namespace std;
+
+typedef struct node{
+    int f,s;
+}Node;
+
+int n,m;
+vector<int> G[MAXN];
+bool vis[MAXN] = {false};
+bool inG[MAXN] = {false};
+int gender[MAXN] = {0};
+vector<int> path;
+vector<Node> re;
+
+bool cmp(Node& a,Node& b){
+    if(a.f==b.f)
+        return a.s < b.s;
+    return a.f < b.f;
+}
+
+void DFS(int u,int e,int layer){    //u为当前结点,e为目标结点
+    if(layer>3)return;      //如果超过3层就直接返回
+    if(e == u){                     //如果找到了就返回
+        path.push_back(u);
+        if(path.size()==4){
+            if(gender[path[0]]==gender[path[1]]&&gender[path[2]]==gender[path[3]]){
+                Node no={path[1],path[2]};
+                re.push_back(no);
+           }
+        }
+        path.pop_back();
+        return;
+    }
+    path.push_back(u);
+    for(int i = 0;i < G[u].size();i++){
+        int v = G[u][i];
+        if(!vis[v]){
+            DFS(v,e,layer+1);
+        }
+    }
+    path.pop_back();
+}
+
+int main(){
+    scanf("%d%d",&n,&m);
+    int a,b;
+    string str1,str2;
+    for(int i = 0;i < m;i++){
+        cin >> str1 >> str2;
+        a = atoi(str1.c_str());b=atoi(str2.c_str());
+        if(str1[0]=='-')
+            gender[abs(a)]=-1;
+        else gender[a] = 1;
+        if(str2[0]=='-')
+            gender[abs(b)] =  -1;
+        else gender[b] = 1;
+        G[abs(a)].push_back(abs(b));
+        G[abs(b)].push_back(abs(a));
+        inG[abs(a)]=true;
+        inG[abs(b)]=true;
+    }
+    int k;
+    scanf("%d",&k);
+    for(int i = 0;i < k;i++){
+        scanf("%d%d",&a,&b);
+        if(!inG[abs(a)]||!inG[abs(b)]){
+            printf("0\n");
+            continue;
+        }
+        DFS(abs(a),abs(b),0);
+        sort(re.begin(),re.end(),cmp);
+        printf("%d\n",re.size());
+        for(int i = 0;i < re.size();i++){
+            printf("%04d %04d\n",re[i].f,re[i].s);
+        }
+        re.clear();
+        path.clear();
+    }
+    return 0;
+}

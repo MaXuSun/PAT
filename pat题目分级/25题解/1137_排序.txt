@@ -1,0 +1,61 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <map>
+#include <math.h>
+#include <algorithm>
+#include <string>
+using namespace std;
+typedef struct node{
+    string name;
+    int gp,gm,gf,g;
+    node(){
+        gp=-1,gm=-1,gf=-1,g=-1;
+    }
+}Node;
+map<string,Node> m;
+bool cmp(Node& a,Node& b){
+    if(a.g==b.g)
+        return a.name < b.name;
+    return a.g > b.g;
+}
+int main(){
+    int p,m1,f,temp;
+    string str;
+    scanf("%d%d%d",&p,&m1,&f);
+    for(int i = 0;i < p;i++){
+        cin >> str >> temp;
+        m[str].name = str;
+        m[str].gp = temp;
+    }
+    for(int i = 0;i < m1;i++){
+        cin >> str >> temp;
+        m[str].name = str;
+        m[str].gm = temp;
+    }
+    for(int i = 0;i < f;i++){
+        cin >> str >> temp;
+        m[str].name = str;
+        m[str].gf = temp;
+        if(m[str].gf > m[str].gm){
+            m[str].g = m[str].gf;
+        }else{
+            float fl = m[str].gm*0.4+m[str].gf*0.6;
+            m[str].g = (round(fl)<=100)?round(fl):100;
+        }
+    }
+    vector<Node> ans;
+    for(auto it:m){
+        Node d = it.second;
+        if(d.g >= 60 && d.g <= 100 && d.gp>=200){
+            ans.push_back(d);
+        }
+    }
+    sort(ans.begin(),ans.end(),cmp);
+    for(int i = 0;i < ans.size();i++){
+        Node d = ans[i];
+        printf("%s %d %d %d %d\n",d.name.c_str(),d.gp,d.gm,d.gf,d.g);
+    }
+
+    return 0;
+}

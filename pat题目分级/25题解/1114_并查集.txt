@@ -1,0 +1,101 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <math.h>
+#include <algorithm>
+#define MAXN 10010
+using namespace std;
+
+typedef struct node{
+    int id,num;
+    double avgs,avga;
+}Node;
+
+bool exits[MAXN]={false};
+int father[MAXN];
+int estate[MAXN]={0};
+int sets[MAXN]={0};
+int familynum[MAXN]={0};
+
+void init(){
+    for(int i = 0;i < MAXN;i++)father[i] = i;
+}
+
+int findFa(int x){
+    if(x == father[x])return x;
+    else{
+        int F = findFa(father[x]);
+        father[x] = F;
+        return F;
+    }
+}
+
+int unionFa(int x,int y){
+    int Fx = findFa(x);
+    int Fy = findFa(y);
+    if(Fx<Fy){
+        father[Fy] = Fx;
+        return Fx;
+    }else{
+        father[Fx] = Fy;
+        return Fy;
+    }
+}
+
+bool cmp(Node& a,Node& b){
+    if(a.avga==b.avga)
+        return a.id < b.id;
+    return a.avga > b.avga;
+}
+
+int main(){
+    int n,f,m,cs,c,id,s,e;
+    cin >> n;
+    init();
+    for(int i = 0;i < n;i++){
+        cin >> id >> f >> m >> cs;
+        exits[id]=true;
+        if(f!=-1){unionFa(id,f);exits[f]=true;}
+        if(m!=-1){unionFa(id,m);exits[m]=true;}
+        for(int j =0;j < cs;j++){
+            cin >> c;
+            unionFa(id,c);exits[c]=true;
+        }
+        cin >> s >> e;
+        sets[id]=s;
+        estate[id]=e;
+    }
+
+    for(int i = 0;i < MAXN;i++){
+        findFa(i);
+    }
+
+    for(int i = 0;i < MAXN;i++){
+        if(exits[i]){
+            int fa = father[i];
+            familynum[fa]++;
+            if(i!=father[i]){
+                sets[fa]+=sets[i];
+                estate[fa]+=estate[i];
+            }
+        }
+    }
+
+    vector<Node> re;
+    for(int i = 0;i < MAXN;i++){
+        if(exits[i]&&familynum[i]>0){
+            int num = familynum[i];
+            Node no={i,num,(1.0*sets[i])/num,(1.0*estate[i])/num};
+            re.push_back(no);
+        }
+    }
+
+    sort(re.begin(),re.end(),cmp);
+    printf("%d\n",re.size());
+    for(int i = 0;i < re.size();i++){
+        Node t = re[i];
+        printf("%04d %d %.3f %.3f\n",t.id,t.num,t.avgs,t.avga);
+    }
+
+    return 0;
+}

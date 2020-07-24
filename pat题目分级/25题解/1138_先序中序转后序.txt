@@ -1,0 +1,39 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+using namespace std;
+vector<int> pre,in,post;
+
+int getPost(int preL,int preR,int inL,int inR){
+    if(preL > preR || post.size()>0)return -1;   //递归边界
+
+    //可以在这构建树
+
+    int k;                      //找出中序和先序相同的结点
+    for(k = inL;k<=inR;k++){
+        if(in[k]==pre[preL])break;
+    }
+
+    int numLeft = k - inL;      //先序，左边长度
+
+    getPost(preL+1,preL+numLeft,inL,k-1);       //左半边先序
+    getPost(preL+1+numLeft,preR,k+1,inR);       //右半边先序
+
+    post.push_back(pre[preL]);
+}
+
+int main(){
+    int n;
+    scanf("%d",&n);
+    pre.resize(n);in.resize(n);
+    for(int i = 0;i < n;i++){
+        scanf("%d",&pre[i]);
+    }
+    for(int i = 0;i < n;i++){
+        scanf("%d",&in[i]);
+    }
+    getPost(0,n-1,0,n-1);
+    printf("%d",post[0]);
+
+    return 0;
+}

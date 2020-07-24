@@ -1,0 +1,51 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <math.h>
+#include <map>
+#include <set>
+#define MAXN 1010
+using namespace std;
+vector<int> pre,in;
+set<int> pres,ins;
+map<int,int> inIndex;   //使用map记录数据在中序遍历中的下标
+int m,n,u,v;
+
+void getLCA(int inL,int inR,int preL,int preR){
+    if(preL > preR)return;
+    int root = inIndex[pre[preL]],uin = inIndex[u],vin=inIndex[v];
+
+    //每满足一个条件就输出
+    if(root>uin && root > vin){
+        getLCA(inL,root-1,preL+1,preL+root-inL);return;
+    }else if(root < uin && root < vin){
+        getLCA(root+1,inR,preL+1+root-inL,preR);return;
+    }else if(root<max(uin,vin)&&root>min(vin,uin)){
+        printf("LCA of %d and %d is %d.\n",u,v,pre[preL]);return;
+    }else if(root==uin){
+        printf("%d is an ancestor of %d.\n",u,v);return;
+    }else if(root == vin){
+        printf("%d is an ancestor of %d.\n",v,u);return;
+    }
+}
+
+int main(){
+    cin >> m >> n;
+    pre.resize(n+1),in.resize(n+1);
+    //从1开始，这样避免了第一个位置与不存在结点查找的冲突
+    for(int j = 1;j <= n;j++){cin >> in[j];inIndex[in[j]]=j;}
+    for(int j = 1;j <= n;j++){cin >> pre[j];}
+
+    for(int i = 0;i < m;i++){
+        cin >> u >> v;
+        if(inIndex[u]==0 && inIndex[v]==0){
+            printf("ERROR: %d and %d are not found.\n",u,v);continue;
+        }else if(inIndex[u]==0){
+            printf("ERROR: %d is not found.\n",u);continue;
+        }else if(inIndex[v]==0){
+            printf("ERROR: %d is not found.\n",v);continue;
+        }
+        getLCA(1,n,1,n);
+    }
+    return 0;
+}

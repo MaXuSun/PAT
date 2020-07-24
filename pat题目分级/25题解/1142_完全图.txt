@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <iostream>
+#include <math.h>
+#include <algorithm>
+#include <vector>
+#define MAXN 210
+using namespace std;
+
+int n;
+int G[MAXN][MAXN];
+
+int main(){
+    int m,k,t1,t2;
+    fill(G[0],G[0]+MAXN,0);
+    scanf("%d %d",&n,&m);
+    for(int i = 1;i <= m;i++){
+        scanf("%d %d",&t1,&t2);
+        G[t1][t2]=G[t2][t1]=1;
+    }
+
+    scanf("%d",&k);
+
+    for(int i = 0;i < k;i++){
+        int num,flag = 0;
+        scanf("%d",&num);
+        vector<int> vs(num);
+        for(int j = 0;j < num;j++)scanf("%d",&vs[j]);
+        if(vs.size()==1)flag=0;
+        else{
+            for(int j=0;j < num;j++){
+                for(int q=0;q < num;q++){
+                    if(vs[j]==vs[q])continue;
+                    if(G[vs[j]][vs[q]]==0)flag = 1;
+                }
+            }
+        }
+        if(flag==1)printf("Not a Clique\n");
+        else{
+            int flag1 = 0;
+            for(int j=1;j <= n;j++){
+                for(int q=0;q < num;q++){
+                    if(G[vs[q]][j]==1)flag1++;
+                }
+                if(flag1==num)break;
+                else flag1=0;
+            }
+            if(flag1==num)printf("Not Maximal\n");
+            else printf("Yes\n");
+        }
+    }
+
+    return 0;
+}

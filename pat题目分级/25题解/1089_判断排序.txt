@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+int main(){
+    int num1[110],num2[110],n;
+    int flag = 0;
+    cin >> n;
+    for(int i = 0;i < n;i++){
+        cin >> num1[i];
+    }
+    for(int i = 0;i < n;i++){
+        cin >> num2[i];
+    }
+
+    int index =0;
+    for(int i = 1;i < n;i++){
+        if(num2[i]>=num2[i-1])index=i+1;    //这里没有等号会有浮点错误
+        else break;
+    }
+    for(int i = index;i < n;i++){
+        if(num1[i]!=num2[i]){
+            flag = 1;
+            break;
+        }
+    }
+    if(flag == 0){      //如果是插入排序
+        sort(num1,num1+index+1);
+        printf("Insertion Sort\n");
+    }else{      //归并排序
+        flag = 1;
+        int k = 1;
+        while(flag){
+            flag = 0;
+            for(int i = 0;i < n;i++){
+                if(num1[i]!=num2[i]){flag = 1;}
+            }
+            k=k*2;
+            for(int i = 0;i < n/k;i++){
+                sort(num1+i*k,num1+(i+1)*k);
+            }
+            sort(num1+n/k*k,num1+n);
+        }
+        printf("Merge Sort\n");
+    }
+    printf("%d",num1[0]);
+    for(int i=1;i < n;i++){
+        printf(" %d",num1[i]);
+    }
+
+    return 0;
+}
+

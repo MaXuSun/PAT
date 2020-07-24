@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <set>
+#include <vector>
+#define MAXN 210
+using namespace std;
+
+//这一题的坑
+//把逻辑写复杂了，不要为了省内存，故意把代码写的难懂！！！
+//把数据都读完后，依次进行判断
+int n;
+int G[MAXN][MAXN];
+int num[MAXN]={0};
+bool all(int u){
+    if(num[u]!=2)return false;
+    for(int i = 1;i <= n;i++){
+        if(i!=u&&num[i]!=1)return false;
+    }
+    return true;
+}
+int main(){
+    int m,k,u,v,v_num,temp;
+
+    cin >> n >> m;
+    fill(G[0],G[0]+MAXN*MAXN,0);
+    for(int i = 0;i < m;i++){
+        cin >> u >> v;
+        G[u][v] = G[v][u] = 1;
+    }
+
+    cin >> k;
+    bool flag = false;
+    for(int i = 0;i < k;i++){
+        cin >> v_num;
+        vector<int> vs(v_num);
+        set<int> s;
+        flag = true;
+        fill(num,num+MAXN,0);
+        for(int j = 0;j < v_num;j++){
+            scanf("%d",&vs[j]);
+            s.insert(vs[j]);
+            num[vs[j]]++;
+        }
+
+        if(v_num-1!=n)flag=false;       //判断是否少走或者多走
+        for(int j = 0;j < v_num-1;j++)  //判断是否断路
+            if(G[vs[j]][vs[j+1]]==0)flag=false;
+        if(flag)flag=all(vs[0]);        //判断是否成环
+
+        if(flag)printf("YES\n");
+        else printf("NO\n");
+    }
+    return 0;
+}

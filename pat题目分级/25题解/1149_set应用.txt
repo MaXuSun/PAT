@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <iostream>
+#include <set>
+#include <vector>
+using namespace std;
+
+set<int> s[100000];
+
+int n,m;
+int main(){
+    scanf("%d%d",&n,&m);
+    int a,b;
+    for(int i = 0;i < n;i++){
+        scanf("%d%d",&a,&b);
+        s[a].insert(b);
+        s[b].insert(a);
+    }
+    vector<int> vs;
+    for(int i = 0;i < m;i++){
+        scanf("%d",&a);
+        for(int j = 0;j < a;j++){
+            scanf("%d",&b);
+            vs.push_back(b);
+        }
+        int flag = 0;
+        for(int j = 0;j < a;j++){
+            for(int k = j+1;k < a;k++){
+                if(s[vs[j]].count(vs[k])==1){
+                    printf("No\n");
+                    flag = 1;
+                    break;
+                }
+            }
+            if(flag==1)break;
+        }
+        if(flag==0)printf("Yes\n");
+        vs.clear();
+    }
+    return 0;
+}

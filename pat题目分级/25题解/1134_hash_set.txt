@@ -1,0 +1,45 @@
+#include <iostream>
+#include <stdio.h>
+#include <algorithm>
+#include <vector>
+#include <set>
+#include <hash_set>
+using namespace std;
+using namespace __gnu_cxx;
+
+typedef struct node{
+    int u,v;
+}Node;
+
+int n,m;
+
+int main(){
+    cin >> n >> m;
+    vector<Node> data;
+    for(int i = 0;i < m;i++){
+        Node no;
+        scanf("%d%d",&no.u,&no.v);
+        data.push_back(no);
+    }
+    int k,qu,temp;
+    cin >> k;
+    for(int i = 0;i < k;i++){
+        scanf("%d",&qu);
+        hash_set<int> s;
+        int flag = 0;
+        for(int j = 0;j < qu;j++){
+            scanf("%d",&temp);
+            s.insert(temp);
+        }
+        for(int j = 0;j < data.size();j++){
+            Node no = data[j];
+            if(s.count(no.u)==0&&s.count(no.v)==0){
+                printf("No\n");
+                flag = 1;
+                break;
+            }
+        }
+        if(flag==0)printf("Yes\n");
+    }
+    return 0;
+}

@@ -1,0 +1,94 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <queue>
+#include <stdlib.h>
+#include <algorithm>
+#define MAXN 100
+using namespace std;
+
+int nodeNum=0;
+typedef struct node{
+    int lchild,rchild;
+    int key;
+}Node;
+int n;
+int isroot[MAXN];
+Node T[MAXN];
+Node BT[MAXN];
+
+int newnode(int key){
+    T[nodeNum].key=key;
+    T[nodeNum].lchild = -1;
+    T[nodeNum].rchild = -1;
+    return nodeNum++;
+}
+
+void BFS(int s){
+    queue<Node> q;
+    q.push(T[s]);
+    int cnt = 1;
+
+    while(!q.empty()){
+        Node top = q.front();
+        BT[cnt++] = top;
+        q.pop();
+        if(top.lchild!=-1)q.push(T[top.lchild]);
+        if(top.rchild!=-1)q.push(T[top.rchild]);
+    }
+}
+
+int findroot(){
+    for(int i = 0;i < n;i++){
+        if(isroot[i])return i;
+    }
+    return -1;
+}
+
+bool isCBT(){
+    int half = n/2;
+    for(int i = half+1;i <= n;i++){
+        if(BT[i].lchild!=-1)return false;
+        if(BT[i].rchild!=-1)return false;
+    }
+    for(int i = 0;i < half;i++){
+        if(BT[i].lchild==-1)return false;
+        if(BT[i].rchild==-1)return false;
+    }
+    if(BT[half].lchild==-1&&BT[half].rchild!=-1)return false;
+
+    return true;
+}
+
+int main(){
+    cin >> n;
+    string a,b;
+    fill(isroot,isroot+MAXN,true);
+    for(int i = 0;i < n;i++){
+        cin >> a >> b;
+        int r = newnode(i);
+        if(a[0]!='-'){
+            int a1 = atoi(a.c_str());
+            T[r].lchild = a1;
+            isroot[a1]=false;
+        }
+        if(b[0]!='-'){
+            int b1 = atoi(b.c_str());
+            T[r].rchild = b1;
+            isroot[b1] = false;
+        }
+    }
+
+    int root = findroot();
+    BFS(root);
+   // for(int i =1;i <= n;i++){
+   //     printf("%d %d %d %d\n",i,BT[i].key,BT[i].lchild,BT[i].rchild);
+    //}
+    if(isCBT()){
+        printf("YES %d",BT[n].key);
+    }else{
+        printf("NO %d",root);
+    }
+
+    return 0;
+}

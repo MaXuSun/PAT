@@ -1,0 +1,42 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <math.h>
+#include <set>
+#include <string.h>
+using namespace std;
+
+int key[100010],ne[100010];
+vector<int> lis1,lis2;
+set<int> data;
+int main(){
+    int root,n,t1,t2,t3;
+    cin >> root >> n;
+    for(int i = 0;i < n;i++){
+        cin >> t1 >> t2 >> t3;
+        key[t1]=t2;ne[t1]=t3;
+    }
+    int s = root;
+    while(s!=-1){
+        if(data.count(abs(key[s]))==0){
+            data.insert(abs(key[s]));
+            lis1.push_back(s);
+        }else {
+            lis2.push_back(s);
+        }
+        s = ne[s];
+    }
+
+    for(int i = 0;i < lis1.size()-1;i++){
+        printf("%05d %d %05d\n",lis1[i],key[lis1[i]],lis1[i+1]);
+    }
+    printf("%05d %d -1\n",lis1.back(),key[lis1.back()]);
+    
+    if(lis2.size()>0){
+        for(int i = 0;i < lis2.size()-1;i++){
+            printf("%05d %d %05d\n",lis2[i],key[lis2[i]],lis2[i+1]);
+        }
+        printf("%05d %d -1",lis2.back(),key[lis2.back()]);
+    }
+    return 0;
+}

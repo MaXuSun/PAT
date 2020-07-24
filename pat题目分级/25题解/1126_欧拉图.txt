@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <math.h>
+#include <algorithm>
+#include <set>
+#define MAXN 510
+using namespace std;
+int n;
+int G[MAXN][MAXN];
+bool vis[MAXN]={false};
+int degree[MAXN]={0};
+int nums=0;
+
+void DFS(int u,int depth){
+    vis[u]=true;
+
+    for(int v = 1;v <= n;v++){
+        if(!vis[v]&&G[u][v]==1){
+            DFS(v,depth+1);
+        }
+    }
+}
+
+void DFSTravel(){
+    for(int u = 1;u <= n;u++){
+        if(!vis[u]){
+            DFS(u,1);
+            nums++;
+        }
+    }
+}
+
+int main(){
+    int m,u,v;
+    int even_n=0,odd_n=0;
+    fill(G[0],G[0]+MAXN,0);
+    scanf("%d %d",&n,&m);
+    for(int i = 0;i < m;i++){
+        scanf("%d %d",&u,&v);
+        G[v][u] = G[u][v] = 1;
+        degree[u]++;
+        degree[v]++;
+    }
+    DFSTravel();
+    for(int i = 1;i <= n;i++){
+        if(degree[i]%2==0)even_n++;
+        else odd_n++;
+        if(i==1)printf("%d",degree[i]);
+        else printf(" %d",degree[i]);
+    }
+    printf("\n");
+
+    if(nums!=1){
+        printf("Non-Eulerian");
+    }else{
+        if(even_n==n)printf("Eulerian");
+        else if(odd_n==2) printf("Semi-Eulerian");
+        else printf("Non-Eulerian");
+    }
+
+    return 0;
+}

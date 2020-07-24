@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <iostream>
+#include <math.h>
+#include <algorithm>
+#include <vector>
+#include <set>
+#define MAXN 210
+using namespace std;
+
+int n;
+int G[MAXN][MAXN];
+
+int main(){
+    int m,u,v,w,k;
+    fill(G[0],G[0]+MAXN,0);
+    cin >> n >> m;
+    for(int i = 0;i < m;i++){
+        cin >> u >> v >> w;
+        G[v][u] = G[u][v]=w;
+    }
+    cin >> k;
+    int min_index=1,min_dis=99999999;
+    for(int i = 1;i <= k;i++){
+        cin >> w;
+        vector<int> vs(w);
+        set<int> s;
+        int na=0,sum = 0;
+        for(int j = 0;j < w;j++){
+            cin >> vs[j];
+            s.insert(vs[j]);
+        }
+        for(int j = 0;j < vs.size()-1;j++){
+            if(G[vs[j]][vs[j+1]]==0){
+                na = 1;break;
+            }
+            else sum+=G[vs[j]][vs[j+1]];
+        }
+        if(na==1||s.size()!=n){
+            if(na==1)printf("Path %d: NA (Not a TS cycle)\n",i);
+            else printf("Path %d: %d (Not a TS cycle)\n",i,sum);
+        }else{
+            if(vs[0]!=vs[w-1])
+                printf("Path %d: %d (Not a TS cycle)\n",i,sum);
+            else {
+                if(vs.size()==n+1)
+                    printf("Path %d: %d (TS simple cycle)\n",i,sum);
+                else
+                    printf("Path %d: %d (TS cycle)\n",i,sum);
+                if(sum<min_dis){
+                    min_dis = sum;
+                    min_index = i;
+                }
+            }
+        }
+    }
+    printf("Shortest Dist(%d) = %d",min_index,min_dis);
+    return 0;
+}
